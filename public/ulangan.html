@@ -1,0 +1,39 @@
+<!-- public/ulangan.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Ujian</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+    <h1 class="text-2xl font-bold mb-4">Daftar Ujian</h1>
+    <div id="daftarUjian" class="space-y-4"></div>
+  </div>
+
+  <script>
+    async function loadUjian() {
+      const res = await fetch('/api/ujians.js');
+      const ujianList = await res.json();
+      const now = new Date();
+
+      daftarUjian.innerHTML = ujianList.map(u => {
+        const mulai = new Date(`${u.tanggal}T${u.waktu}`);
+        const bisaKerjakan = now >= mulai && now <= new Date(mulai.getTime() + u.durasi * 60000);
+        return `
+          <div class="border p-4 rounded shadow-sm">
+            <h3 class="font-bold text-lg">${u.judul}</h3>
+            <p class="text-sm text-gray-600">Tanggal: ${u.tanggal}, Jam: ${u.waktu}, Durasi: ${u.durasi} menit</p>
+            <a href="kerjakan.html?id=${u.id}" class="mt-2 inline-block px-4 py-2 rounded ${bisaKerjakan ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600 pointer-events-none'}">
+              ${bisaKerjakan ? 'Kerjakan Sekarang' : 'Belum Bisa Dikerjakan'}
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+    loadUjian();
+  </script>
+</body>
+</html>

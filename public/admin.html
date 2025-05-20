@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-6">Dashboard Admin</h1>
+
+    <h2 class="text-xl font-semibold mb-2">Daftar Ujian</h2>
+    <ul id="ujianList" class="space-y-2 mb-6"></ul>
+
+    <h2 class="text-xl font-semibold mb-2">Tambah User</h2>
+    <form id="addUserForm" class="space-y-4">
+      <input id="newUsername" type="text" placeholder="Username" required class="w-full p-2 border rounded-lg">
+      <input id="newPassword" type="password" placeholder="Password" required class="w-full p-2 border rounded-lg">
+      <select id="newRole" required class="w-full p-2 border rounded-lg">
+        <option value="siswa">Siswa</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tambah User</button>
+    </form>
+    <p id="addUserMsg" class="text-green-600 mt-4 hidden">User berhasil ditambahkan!</p>
+  </div>
+
+  <script>
+    async function loadUjianList() {
+      const res = await fetch('/api/ujian');
+      const data = await res.json();
+      const list = document.getElementById('ujianList');
+      list.innerHTML = data.length ? data.map(u => `<li class="bg-gray-100 p-3 rounded">${u.nama} - ${u.tanggal}</li>`).join('') : '<li class="text-gray-500">Tidak ada ujian.</li>';
+    }
+
+    document.getElementById("addUserForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("newPassword").value;
+      const role = document.getElementById("newRole").value;
+
+      const res = await fetch("/api/add-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role })
+      });
+
+      if (res.ok) {
+        document.getElementById("addUserMsg").classList.remove("hidden");
+        this.reset();
+        loadUjianList();
+      }
+    });
+
+    loadUjianList();
+  </script>
+</body>
+</html>
