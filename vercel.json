@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+    { "source": "/", "destination": "/login.html" },
     { "source": "/Admin-Dsb", "destination": "/admin-dsb.html" }
   ]
 }
